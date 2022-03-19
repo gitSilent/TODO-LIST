@@ -1,8 +1,8 @@
 
 divTodo = document.querySelector('.todo');
+let nowDay, nowMonth, nowYear, nowDayOfWeek;
 
 function addClockDiv(){
-    
 
     divClock = document.querySelector('.divClock');
 
@@ -11,8 +11,7 @@ function addClockDiv(){
     divClock.append(divHours);
 
     divDots = document.createElement("div");
-    divDots.classList.add(`divDots`);
-    divDots.setAttribute('id',"visible")
+    divDots.setAttribute('id',"divDots")
     divClock.append(divDots);
     divDots.textContent = ":"
 
@@ -20,31 +19,54 @@ function addClockDiv(){
     divMinutes.classList.add(`divMinutes`);
     divClock.append(divMinutes);
 
+    divDay = document.createElement("div");
+    divDay.classList.add(`divDay`);
+    divClock.append(divDay);
+
+    
+
     startClock();
 }
-addClockDiv();
-
-// function interval(){
-//     setInterval(()=>{
-//         if (divDots.getAttribute('visible')){
-//             divDots.textContent = "";
-//             divDots.getAttribute('invisible');
-//         }
-//         else if (divDots.getAttribute('invisible')){
-//             divDots.textContent = ":";
-//             divDots.getAttribute('visible');
-//     }
-//     }),1000}
 
 
-function startClock(){
-    timeNow = new Date();
+function updateTime(){
     if (timeNow.getHours()<10){divHours.textContent = ` 0${timeNow.getHours()}`;}
     else {divHours.textContent = timeNow.getHours()}
     if (timeNow.getMinutes()<10){divMinutes.textContent = ` 0${timeNow.getMinutes()}`;}
     else{divMinutes.textContent = timeNow.getMinutes()}
+}
 
-    // document.addEventListener('mouseOver', interval)
+function startClock(){
+    timeNow = new Date();
+    updateTime();
+    setInterval(()=>{
+        timeNow = new Date
+        updateTime();
+        divDots.classList.toggle('divDots')
+    },1000);
+}
+
+function detectDay(){
+    now = new Date();
+    month = ["января","февраля", "марта","апреля","мая","июня","июля","августа","сентября","октября","декабря"];
+    weekDays = ["Воскресенье","Понедельник","Вторник","Cреда","Четверг","Пятница","Суббота"];
+    nowDayOfWeek = weekDays[now.getDay()];    
+    nowMonth = month[now.getMonth()];
+    nowYear = now.getFullYear();
+    nowDay = now.getDate();
+    
+}
+
+function fillDate(){
+    detectDay();
+    divDay.textContent = `${nowDay} ${nowMonth} ${nowYear} г `
+    setInterval(()=>{
+        detectDay();
+        divDay.textContent = `${nowDay} ${nowMonth} ${nowYear} г `;
+        console.log("date updated")
+    },60000)
+    
+}
 
 
 function createAppTitle() {
@@ -54,14 +76,18 @@ function createAppTitle() {
     divTodo.append(h1);
     
 }
-createAppTitle()
+
+
+// function preventDefault(event){
+//     event.
+// }
 
 function createTodoItemForm() {
     // form = document.createElement("form");
     // form.classList.add("input-group");
     // divTodo.append(form);
 
-    divEnter = document.createElement("div");
+    divEnter = document.createElement("form");
     divEnter.classList.add("divEnter");
     divTodo.append(divEnter);
 
@@ -81,7 +107,7 @@ function createTodoItemForm() {
     btnAdd.textContent = 'ADD NOTE';
 
 }
-createTodoItemForm();
+
 
 function createTodoList() {
    
@@ -100,6 +126,8 @@ function createTodoList() {
 
 function createTodoItems() {
     countNotes = countNotes + 1;
+
+    event.preventDefault();
 
     li = document.createElement("li");
     li.setAttribute('id',`li`)
@@ -140,26 +168,119 @@ function createTodoItems() {
     input.value = "";
 
 }
+function confirmDel(){
+    
+    if(confirm("Вы действительно хотите удалить запись?")){
+        return true;
+    }
+    else {return false}
+    
+}
 
+function confirmDelAll(){
+    
+    if(confirm("Вы действительно хотите удалить ВСЕ записи?")){
+        return true;
+    }
+    else {return false}
+    
+}
 
+function createDeleteAll(){
+    if (divTodo.querySelector('#btnDelAll') == null){
+        // divDelAll = document.createElement('button');
+        // divDelAll.setAttribute('id','divDelAll');
+        // divDelAll.textContent = ""
+        // divEnter.append(divDelAll);
+
+        btnDelAll = document.createElement('button');
+        btnDelAll.setAttribute('id','btnDelAll');
+        btnDelAll.textContent = "DELETE ALL"
+        btnDelAll.classList.add('btnDelAll');
+        btnDelAll.classList.add('btn-danger');
+        
+        divList.append(btnDelAll);
+        
+    }
+}
+
+addClockDiv();
+fillDate();
+createAppTitle()
+createTodoItemForm();
 createTodoList();
 let countNotes = 0;
 
-btnAdd.addEventListener('click', createTodoItems);
+divEnter.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (input.value != ""){
+    createDeleteAll();
+    // console.log(event.target.className);
+    createTodoItems();
+    console.log(countNotes);
+    }
+    
+    
+});
 
 divTodo.addEventListener('click', (event)=>{
     // console.log(event.target.className.indexOf('Delete'))
-    if (event.target.className.indexOf('buttonDelete') != -1){
+    if (event.target.getAttribute('id') == 'buttonDelete'){
         console.log(event.target);
-        event.target.closest('#li').remove();
-    }
-})
+        console.log(event.target.getAttribute('id'))
+        if (confirmDel()) {
+            event.target.closest('#li').remove();
+            countNotes-=1;
+            if (countNotes==0){
+                btnDelAll.remove();
 
-divTodo.addEventListener('click', (event)=>{
-    console.log(event.target.className);
+            }
+        }
+        
+    }
     if(event.target.className.indexOf('buttonDone') != -1){
         (event.target.closest('#divNote')).classList.toggle('backColor');
         
     }
+})
 
-})}
+// divTodo.addEventListener('click', (event)=>{
+//     console.log(event.target.className);
+//     if(event.target.className.indexOf('buttonDone') != -1){
+//         (event.target.closest('#divNote')).classList.toggle('backColor');
+        
+//     }
+
+// })
+divList.addEventListener('click', (e)=>{
+    if (e.target.getAttribute('id') == "btnDelAll"){
+        if(confirmDelAll()){
+            for (i=0;i<countNotes;i++){
+                liElem = document.getElementById('li');
+                liElem.remove();
+        }
+        countNotes = 0;
+        btnDelAll.remove();
+    }
+    }
+})
+
+
+
+
+// divTodo.addEventListener('click', (event)=>{
+//     // console.log(event.target.className.indexOf('Delete'))
+//     if (event.target.className == document.getElementById('#buttonDelete')){
+//         console.log(event.target.getAttribute('id'));
+//         event.target.closest('#li').remove();
+//     }
+// })
+
+// divTodo.addEventListener('click', (event)=>{
+//     // console.log(event.target.className.indexOf('Delete'))
+//     if (event.target.className.indexOf('buttonDelete') != -1){
+//         console.log(event.target);
+//         console.log(event.target.getAttribute('id'))
+//         event.target.closest('#li').remove();
+//     }
+// })

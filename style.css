@@ -35,6 +35,9 @@ body{
     background-color: rgba(175, 175, 175, 0.301);
 
 }
+h1{
+    font-size: 50px !important;
+}
  #divButtons{
     width: 200px;
     display: inline-table;
@@ -46,6 +49,7 @@ body{
 .input-group-append{
     width: 180px;
     display: inline-block;
+    margin-bottom: 10px;
 }
 #p_note{
     max-width: 450px;
@@ -68,6 +72,9 @@ body{
     margin-bottom: 10px;
     display: inline-block;
 
+}
+#buttonDone{
+    margin-right: 5px;
 }
 li{
     list-style-type:none;
@@ -100,7 +107,7 @@ li{
     width: 350px;
     height: 140px;
     margin: auto;
-    margin-top: 50px;
+    margin-top: 10px;
     padding-bottom: 30px;
 }
 .divHours{
@@ -121,7 +128,7 @@ li{
     margin-top: auto;
     margin-bottom: auto;
 }
-.divDots{
+#divDots{
     width: 50px;
     height: 120px;
     display: inline-block;
@@ -131,7 +138,42 @@ li{
     margin-bottom: auto;
 }
 
+.divDots{
+    visibility: hidden;
+}
+.divDay{
+    width: 180px;
+    height: 50px;
+    margin: auto;
+    margin-top: 10px;
+    text-align: center;
+    font-size: 20px;
+}
+.mainTodoDiv, li, .btn-danger{
+    animation-duration: 0.5s;
+    animation-name: my-animation;
 
+}
+/* .mainTodoDiv{
+    animation-duration: 0.5s;
+    animation-name: my-animation;
+
+} */
+.mainTodoDiv {
+    animation-duration: 3s;
+    animation-name: my-animation;
+  }
+  
+
+
+@keyframes my-animation{
+    0% {opacity: 0;}
+    100% {opacity: 1;}
+}
+#btnDelAll{
+    margin-bottom: 10px;
+    width: 150px;
+}
 /*
 .p_note{
     display: inline;
