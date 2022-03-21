@@ -2,6 +2,7 @@
 let divTodo = document.querySelector('.todo');
 let nowDay, nowMonth, nowYear, nowDayOfWeek;
 let p_values = [];
+let done = [];
 
 let timeNow = new Date();
 
@@ -173,25 +174,30 @@ function createTodoItems() { //создаем и возвращаем элеме
     input.value = "";
 
     p_values.push(p_note.textContent)
+    done.push(false);
+
     localStorage.setItem('status',JSON.stringify(p_values));
+    localStorage.setItem('done',JSON.stringify(done));
 
     console.log(p_values);
+    console.log(done);
 
 }
 
-function storageCreateTodoItems(content) { //создаем и возвращаем элемент списка (из localStorage)
+function storageCreateTodoItems(content,i) { //создаем и возвращаем элемент списка (из localStorage)
     countNotes = countNotes + 1;
+    done = JSON.parse(localStorage.getItem('done'));
 
-    // event.preventDefault();
     let li = document.createElement("li");
     li.setAttribute('id',`li`)
     li.classList.add(`divEnter${countNotes}`);
-    // ul = document.querySelector('.ul');
     ul.appendChild(li);
 
     let divNote = document.createElement("div");
     divNote.setAttribute('id',`divNote`)
-    // divNote.classList.add(`divNote`);
+    if (done[i] == true){
+        divNote.classList.add('backColor')
+    }
     li.append(divNote);
     
     let p_note = document.createElement("p");
@@ -222,8 +228,7 @@ function storageCreateTodoItems(content) { //создаем и возвраща�
 
     input.value = "";
 
-    // p_values.push(p_note.textContent)
-    // localStorage.setItem('status', p_values);
+    
 
     console.log("storageCreate p_values ",p_values);
 
@@ -249,11 +254,6 @@ function confirmDelAll(){ // функция подтверждения удал�
 
 function createDeleteAll(){ //функция создания кнопки удаления всех записей
     if (divTodo.querySelector('#btnDelAll') == null){
-        // divDelAll = document.createElement('button');
-        // divDelAll.setAttribute('id','divDelAll');
-        // divDelAll.textContent = ""
-        // divEnter.append(divDelAll);
-
         btnDelAll.setAttribute('id','btnDelAll');
         btnDelAll.textContent = "DELETE ALL"
         btnDelAll.classList.add('btnDelAll');
@@ -263,6 +263,21 @@ function createDeleteAll(){ //функция создания кнопки уд�
         
     }
 }
+function refreshDone(){
+let AllDivNote = ul.querySelectorAll('#divNote');
+        let i = 0;
+        done.splice(0,done.length)
+        for (let note of AllDivNote){
+            if (note.className == "backColor"){
+                done[i] = true;
+            } else {
+                done[i] = false;
+            }
+            i++;
+        }
+        console.log(p_values);
+        console.log(done);
+    }
 
 addClockDiv();
 fillDate();
@@ -277,7 +292,7 @@ if (localStorage.getItem('status') != "" && localStorage.getItem('status') != nu
     p_values = (JSON.parse(localStorage.getItem('status'))); //заполнение локального массива записей текстовыми значениями из localStorage
     for(let i = 0; i < p_values.length;i++){ //создание и размещение записей на странице divList
         let content = p_values[i];
-        storageCreateTodoItems(content);
+        storageCreateTodoItems(content,i);
     }
     if (JSON.parse(localStorage.getItem('status')) != ""){ 
         createDeleteAll();   
@@ -303,9 +318,9 @@ divEnter.addEventListener('submit', function(e){ //событие, добавл�
 
         e.preventDefault();
         if (input.value != ""){
-        createDeleteAll();
-        createTodoItems();
-        console.log("countNotes", countNotes);
+            createDeleteAll();
+            createTodoItems();
+            console.log("countNotes", countNotes);
         }
     }    
 });
@@ -328,6 +343,9 @@ divTodo.addEventListener('click', (event)=>{
             // console.log(p_values);
             localStorage.setItem('status', JSON.stringify(p_values)); //обновление локального хранилища данными из массива
 
+            refreshDone();
+            localStorage.setItem('done', JSON.stringify(done)); 
+
             if (countNotes==0){
                 btnDelAll.remove();
 
@@ -336,6 +354,9 @@ divTodo.addEventListener('click', (event)=>{
     }
     if(event.target.className.indexOf('buttonDone') != -1){ //пометка "выполнено" на записи 
         (event.target.closest('#divNote')).classList.toggle('backColor');
+        refreshDone();
+        localStorage.setItem('done', JSON.stringify(done)); 
+
     }
 })
 
@@ -350,6 +371,7 @@ divList.addEventListener('click', (e)=>{ // удаление всех запис
         btnDelAll.remove();
 
         p_values = [];
+        done = [];
         localStorage.clear();
     }
     }
